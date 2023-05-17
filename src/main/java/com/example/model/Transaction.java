@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 
@@ -28,13 +29,45 @@ public class Transaction {
 //	private int receiverID;
 	
 	@ManyToOne
-	private BankAccount account;
+	private BankAccount senderAccount;
+	@ManyToOne
+	private BankAccount receiverAccount;
+	public Transaction(int acctID, String transacType, String transacStatus, Double initBal, Double finalBal,
+		LocalDate transaction_date, LocalTime transaction_time, BankAccount senderAccount,BankAccount receiverAccount,
+		CurrencyConversion currencyConverted) {
+	super();
+	this.acctID = acctID;
+	this.transacType = transacType;
+	this.transacStatus = transacStatus;
+	this.initBal = initBal;
+	this.finalBal = finalBal;
+	this.transaction_date = transaction_date;
+	this.transaction_time = transaction_time;
+	this.senderAccount=senderAccount;
+	this.receiverAccount=receiverAccount;
+	this.currencyConverted = currencyConverted;
+}
+
+	@OneToOne
+	private CurrencyConversion currencyConverted;
 
 	public Transaction() {
 
 	}
 	
 	
+
+	public CurrencyConversion getCurrencyConverted() {
+		return currencyConverted;
+	}
+
+
+
+	public void setCurrencyConverted(CurrencyConversion currencyConverted) {
+		this.currencyConverted = currencyConverted;
+	}
+
+
 
 	public Transaction(int acctID, String transacType, String transacStatus, Double initBal, Double finalBal) {
 		super();
@@ -44,7 +77,17 @@ public class Transaction {
 		this.initBal = initBal;
 		this.finalBal = finalBal;
 	}
-
+	public Transaction(int acctID, String transacType, String transacStatus, Double initBal, Double finalBal,CurrencyConversion currencyConverted, BankAccount senderAccount,BankAccount receiverAccount) {
+		super();
+		this.acctID = acctID;
+		this.transacType = transacType;
+		this.transacStatus = transacStatus;
+		this.initBal = initBal;
+		this.finalBal = finalBal;
+		this.currencyConverted=currencyConverted;
+		this.senderAccount=senderAccount;
+		this.receiverAccount=receiverAccount;
+	}
 
 
 	public int getAcctID() {
@@ -79,6 +122,30 @@ public class Transaction {
 		this.initBal = initBal;
 	}
 
+	public BankAccount getSenderAccount() {
+		return senderAccount;
+	}
+
+
+
+	public void setSenderAccount(BankAccount senderAccount) {
+		this.senderAccount = senderAccount;
+	}
+
+
+
+	public BankAccount getReceiverAccount() {
+		return receiverAccount;
+	}
+
+
+
+	public void setReceiverAccount(BankAccount receiverAccount) {
+		this.receiverAccount = receiverAccount;
+	}
+
+
+
 	public Double getFinalBal() {
 		return finalBal;
 	}
@@ -95,6 +162,16 @@ public class Transaction {
 		this.transaction_date = transaction_date;
 	}
 
+	@Override
+	public String toString() {
+		return "Transaction [acctID=" + acctID + ", transacType=" + transacType + ", transacStatus=" + transacStatus
+				+ ", initBal=" + initBal + ", finalBal=" + finalBal + ", transaction_date=" + transaction_date
+				+ ", transaction_time=" + transaction_time + ", senderAccount=" + senderAccount + ", receiverAccount="
+				+ receiverAccount + ", currencyConverted=" + currencyConverted + "]";
+	}
+
+
+
 	public LocalTime getTransaction_time() {
 		return transaction_time;
 	}
@@ -103,13 +180,7 @@ public class Transaction {
 		this.transaction_time = transaction_time;
 	}
 
-	public BankAccount getAccount() {
-		return account;
-	}
-
-	public void setAccount(BankAccount account) {
-		this.account = account;
-	}
+	
 	
 	
 	
