@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.repository.UserRepository;
+import com.example.model.Admin;
 import com.example.model.User;
+import com.example.repository.AdminRepository;
+import com.example.repository.UserRepository;
 
 
 
@@ -27,6 +29,9 @@ public class UserController {
 
 	@Autowired
 	private UserRepository userRepository; 
+	
+	@Autowired
+	private AdminRepository adminRepository;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -48,15 +53,35 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body("Signup Success");
 
 	}
-
+//user login
 	@GetMapping("/login")
-	public User login(Principal principal) { //it tells us currently loggedIn username
+	public ResponseEntity<Object> login(Principal principal) { //it tells us currently loggedIn username
 		//if u come to this line, it means that username and password given are valid
 		User user  = userRepository.getUserByUsername(principal.getName());
-		return user;
+		if(user.getRole().matches("CUSTOMER")) {
+			return ResponseEntity.status(HttpStatus.OK).body(user);}
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Signup failed");
 	}
 
-
+//admin login
+	@GetMapping("admin/login")
+	
+	public ResponseEntity<Object> adminLogin(Principal principal) { //it tells us currently loggedIn username
+		//if u come to this line, it means that username and password given are valid
+		User user  = userRepository.getUserByUsername(principal.getName());
+		if(user.getRole().matches("admin")) {
+		return ResponseEntity.status(HttpStatus.OK).body(user);}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Signup failed");
+		}
+	
+	
+	
+//	public Admin adminLogin(Principal principal) { //it tells us currently loggedIn username
+//		//if u come to this line, it means that username and password given are valid
+//		
+//		Admin admin  = adminRepository.getAdminByAdminName(principal.getName());
+//		return admin;
+//	}
 	/* API for Security Verification */
 	@GetMapping("/hello")
 	public String getHello() {

@@ -42,6 +42,7 @@ public class TransactionController {
 //		return ResponseEntity.status(HttpStatus.OK).body(transaction);
 //		return transactionService.showLog(acctID);
 		Optional<Transaction> transactions = transactionService.getTransactionsByAccountID(acctID);
+		
 		return transactions;
 	}
 

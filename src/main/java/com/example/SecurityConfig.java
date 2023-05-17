@@ -18,7 +18,7 @@ import com.example.service.MyUserDetailsService;
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
-//	@Autowired(required = false)
+	@Autowired(required = false)
 	private MyUserDetailsService myUserDetailsService;
 	
 	@Override
@@ -30,6 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	protected void configure(HttpSecurity http) throws Exception {
 		//I will define API URLS that need security
 		http.authorizeRequests()
+		.antMatchers(HttpMethod.GET,"/api/bank/user/login").authenticated()
 		.antMatchers(HttpMethod.GET,"/api/bank/user/login").authenticated()
 		.antMatchers(HttpMethod.GET, "/bank/user/hello").permitAll()
 		.antMatchers(HttpMethod.GET, "/api/user/private/hello").authenticated()

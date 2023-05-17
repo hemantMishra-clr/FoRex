@@ -2,7 +2,6 @@ package com.example.controller;
 
 import java.time.LocalDate;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.model.BankAccount;
+import com.example.model.CurrencyConversion;
 import com.example.model.Customer;
 import com.example.model.Transaction;
 import com.example.service.BankAccountService;
+import com.example.service.CurrencyConversionService;
 import com.example.service.CustomerService;
+import com.example.service.TransactionService;
 
 
 @CrossOrigin(origins = {"*"})
@@ -35,6 +37,12 @@ public class BankAccountController {
 	
 	@Autowired
 	private TransactionController transactionController;
+	
+	@Autowired
+	private TransactionService transactionService;
+	
+	@Autowired
+	private CurrencyConversionService currencyConversionService; 
 	
 
 	// createAccount happens upon createCustomer
@@ -96,6 +104,24 @@ public class BankAccountController {
 		transactionController.addLog(loggerReceiver);
 		return ResponseEntity.status(HttpStatus.OK).body("Amount "+amount+ "Transfered from "+acctID+" to "+destAcctID);
 	}
+	
+	// transferCurrency`
+		@PutMapping("/account/transfer/currency/{acctID}/{destAcctID}/{currencyId}")
+		public ResponseEntity<String> transferCurrency(@PathVariable int acctID, @PathVariable int destAcctID, @PathVariable int currencyId) {
+			BankAccount sender=getAccountInfo(acctID);
+			BankAccount receiver=getAccountInfo(destAcctID);
+			Double initBalSender = getBalance(acctID);
+			Double initBalReceiver = getBalance(destAcctID);
+			CurrencyConversion currencyConverted=currencyConversionService.getCurrencyByID(currencyId);
+						bankAccountService.transferCurrency(acctID, destAcctID, currencyId);
+			Transaction transactionSender = new Transaction(acctID, "Transferred", "Success", initBalSender, initBalSender - currencyConverted.getAmount(),currencyConverted,sender,receiver);
+
+			transactionService.addLog(transactionSender);
+			Transaction loggerReceiver = new Transaction(destAcctID, "Received", "Success", initBalReceiver,
+					initBalReceiver +currencyConverted.getConvertedAmount(),currencyConverted,sender,receiver);
+			transactionService.addLog(loggerReceiver);
+			return ResponseEntity.status(HttpStatus.OK).body("Amount "+currencyConverted.getAmount()+ "Transfered from "+acctID+" to "+destAcctID);
+		}
 
 	// deleteAccount
 	@DeleteMapping("/account/{acctID}")
